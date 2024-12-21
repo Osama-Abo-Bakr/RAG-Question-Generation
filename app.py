@@ -1,5 +1,6 @@
 import streamlit as st
 from dotenv import load_dotenv
+from fpdf import FPDF
 import PyPDF2
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
