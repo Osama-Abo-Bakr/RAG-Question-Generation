@@ -39,6 +39,8 @@ def get_pdf_text(upload_pdfs):
         finally:
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
+                
+        st.info(text)
 
     return text
 
