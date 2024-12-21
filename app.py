@@ -29,7 +29,7 @@ def split_data_into_chunks(raw_text):
         length_function=len
     )
 
-    chunks = text_splitter.split_documents(raw_text)
+    chunks = text_splitter.split_text(raw_text)
     return chunks
 
 
