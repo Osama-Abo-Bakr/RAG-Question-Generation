@@ -1,6 +1,3 @@
-Here's a README file for your project:
-
-```markdown
 # Question Generator from PDF 📚
 
 This application processes uploaded PDF documents, extracts meaningful content, and generates insightful questions using AI models. It leverages LangChain, Google Generative AI, and other advanced tools to provide high-quality, customizable questions.
