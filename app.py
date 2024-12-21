@@ -1,8 +1,5 @@
-import os
-import unicodedata
 import streamlit as st
 from dotenv import load_dotenv
-from fpdf import FPDF
 import PyPDF2
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -13,37 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_groq import ChatGroq
 
-
-def clean_text(text):
-    return unicodedata.normalize('NFKD', ''.join(char for char in text if not 0xD800 <= ord(char) <= 0xDFFF))
-
-
-def get_pdf_text(upload_pdfs):
-    text = []
-    # for pdf in upload_pdfs:
-    #     st.info(pdf.name)
-    #     temp_file_path = os.path.join(os.getcwd(), pdf.name)
-    #     with open(temp_file_path, "wb") as temp_file:
-    #         temp_file.write(pdf.read())
-
-    #     try:
-    #         pdf_reader = PyPDFLoader(temp_file_path)
-    #         pages = pdf_reader.load()
-    #         cleaned_pages = []
-    #         for page in pages:
-    #             page.page_content = clean_text(page.page_content)
-    #             cleaned_pages.append(page)
-
-    #         text.extend(cleaned_pages)
-
-    #     except Exception as e:
-    #         print(f"Error processing PDF {pdf.name}: {str(e)}")
-    #     finally:
-    #         if os.path.exists(temp_file_path):
-    #             os.remove(temp_file_path)
-                
-    #     st.info(text)
-    
+def get_pdf_text(upload_pdfs):    
     try:
         pdf_reader = PyPDF2.PdfReader(upload_pdfs)
         extracted_text = ''.join(page.extract_text() for page in pdf_reader.pages)
@@ -52,9 +19,6 @@ def get_pdf_text(upload_pdfs):
     except Exception as e:
         st.error(f"Failed to extract text from PDF: {e}")
         return None
-
-    return extracted_text
-
 
 def split_data_into_chunks(raw_text):
     text_splitter = RecursiveCharacterTextSplitter(
