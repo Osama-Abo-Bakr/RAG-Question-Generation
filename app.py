@@ -5,7 +5,6 @@ import PyPDF2
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -14,8 +13,8 @@ from langchain_groq import ChatGroq
 def get_pdf_text(upload_pdfs):    
     try:
         pdf_reader = PyPDF2.PdfReader(upload_pdfs)
+        extracted_text = ''
         extracted_text = ''.join(page.extract_text() for page in pdf_reader.pages)
-        st.info(extracted_text)
         return extracted_text
     except Exception as e:
         st.error(f"Failed to extract text from PDF: {e}")
@@ -34,7 +33,7 @@ def split_data_into_chunks(raw_text):
 
 
 def store_chunks_vectorDB(chunks, embedding):
-    vector_db = FAISS.from_documents(documents=chunks, embedding=embedding)
+    vector_db = FAISS.from_texts(texts=chunks, embedding=embedding)
     return vector_db
 
 
@@ -165,7 +164,7 @@ def main():
         st.subheader("Generate Questions from Processed PDF Content")
 
         if st.button("Generate Questions"):
-            content = " ".join([chunk.page_content for chunk in st.session_state.raw_text])
+            content = " ".join([chunk for chunk in st.session_state.raw_text])
             inputs = {
                 "content": content,
                 "question_types": question_types,
