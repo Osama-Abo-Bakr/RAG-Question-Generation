@@ -3,6 +3,7 @@ import unicodedata
 import streamlit as st
 from dotenv import load_dotenv
 from fpdf import FPDF
+import PyPDF2
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -19,32 +20,40 @@ def clean_text(text):
 
 def get_pdf_text(upload_pdfs):
     text = []
-    for pdf in upload_pdfs:
-        st.info(pdf.name)
-        temp_file_path = os.path.join(os.getcwd(), pdf.name)
-        with open(temp_file_path, "wb") as temp_file:
-            temp_file.write(pdf.read())
+    # for pdf in upload_pdfs:
+    #     st.info(pdf.name)
+    #     temp_file_path = os.path.join(os.getcwd(), pdf.name)
+    #     with open(temp_file_path, "wb") as temp_file:
+    #         temp_file.write(pdf.read())
 
-        try:
-            pdf_reader = PyPDFLoader(temp_file_path)
-            pages = pdf_reader.load()
-            st.info(pages)
-            cleaned_pages = []
-            for page in pages:
-                page.page_content = clean_text(page.page_content)
-                cleaned_pages.append(page)
+    #     try:
+    #         pdf_reader = PyPDFLoader(temp_file_path)
+    #         pages = pdf_reader.load()
+    #         cleaned_pages = []
+    #         for page in pages:
+    #             page.page_content = clean_text(page.page_content)
+    #             cleaned_pages.append(page)
 
-            text.extend(cleaned_pages)
+    #         text.extend(cleaned_pages)
 
-        except Exception as e:
-            print(f"Error processing PDF {pdf.name}: {str(e)}")
-        finally:
-            if os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
+    #     except Exception as e:
+    #         print(f"Error processing PDF {pdf.name}: {str(e)}")
+    #     finally:
+    #         if os.path.exists(temp_file_path):
+    #             os.remove(temp_file_path)
                 
-        st.info(text)
+    #     st.info(text)
+    
+    try:
+        pdf_reader = PyPDF2.PdfReader(upload_pdfs)
+        extracted_text = ''.join(page.extract_text() for page in pdf_reader.pages)
+        st.info(extracted_text)
+        return extracted_text
+    except Exception as e:
+        st.error(f"Failed to extract text from PDF: {e}")
+        return None
 
-    return text
+    return extracted_text
 
 
 def split_data_into_chunks(raw_text):
@@ -154,7 +163,7 @@ def main():
     if 'vectors' not in st.session_state:
         st.session_state.vectors = None
 
-    upload_pdf = st.sidebar.file_uploader("Upload PDF(s) 📚", type="pdf", accept_multiple_files=True)
+    upload_pdf = st.sidebar.file_uploader("Upload PDF(s) 📚", type="pdf", accept_multiple_files=False)
 
     st.sidebar.markdown("### Customize Question Generation")
     question_types = st.sidebar.selectbox(
