@@ -1,6 +1,7 @@
 streamlit
 python-dotenv
 fpdf
+pypdf2==3.0.1
 langchain
 langchain_community
 langchain_core
