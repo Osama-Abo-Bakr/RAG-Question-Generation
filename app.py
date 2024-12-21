@@ -20,6 +20,7 @@ def clean_text(text):
 def get_pdf_text(upload_pdfs):
     text = []
     for pdf in upload_pdfs:
+        st.info(pdf.name)
         temp_file_path = os.path.join(os.getcwd(), pdf.name)
         with open(temp_file_path, "wb") as temp_file:
             temp_file.write(pdf.read())
