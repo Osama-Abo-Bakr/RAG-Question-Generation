@@ -28,6 +28,7 @@ def get_pdf_text(upload_pdfs):
         try:
             pdf_reader = PyPDFLoader(temp_file_path)
             pages = pdf_reader.load()
+            st.info(pages)
             cleaned_pages = []
             for page in pages:
                 page.page_content = clean_text(page.page_content)
